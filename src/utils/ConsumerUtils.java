@@ -13,6 +13,7 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,13 +29,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConsumerUtils {
 	
-	public static ConcurrentHashMap<String, String>  getConsumerIdAndDatesMap(String filePath) throws IOException{
+	public static ConcurrentHashMap<String, String>  getConsumerIdAndDatesMap(String filePath) {
 		ConcurrentHashMap<String, String> idAndDates = new ConcurrentHashMap<String, String>();
-		BufferedReader br = new BufferedReader(new FileReader(new File(filePath)));
 		String[] line;
-		while(br.ready()){
-			line = br.readLine().split("\t");
-			idAndDates.put(line[0]	, line[1]);
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(new File(filePath)));
+			while(br.ready()){
+				line = br.readLine().split("\t");
+				idAndDates.put(line[0]	, line[1]);
+			}
+		} catch (Exception e){
+			e.printStackTrace();
 		}
 		return idAndDates;
 	}

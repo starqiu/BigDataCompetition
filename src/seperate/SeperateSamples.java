@@ -17,6 +17,7 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 import utils.CommonUtils;
 import utils.ConsumerUtils;
+
 /*
  * ============================================================
  * The SSE USTC Software License
@@ -32,72 +33,80 @@ import utils.ConsumerUtils;
 /**
  * 实现功能： 将样本分成正样本和负样本
  * <p>
- * date	        author            email		           notes<br />
+ * date author email notes<br />
  * ----------------------------------------------------------------<br />
- *2014年10月8日        邱星         starqiu@mail.ustc.edu.cn	    新建类<br /></p>
+ * 2014年10月8日 邱星 starqiu@mail.ustc.edu.cn 新建类<br />
+ * </p>
  *
  */
 public class SeperateSamples {
-	
-	public static ConcurrentHashMap<String, String> idAndDates ;
-	
-	public static  class SeperateMapper extends Mapper<LongWritable, Text, Text, Text> {
+
+	public final static ConcurrentHashMap<String, String> idAndDates = ConsumerUtils
+			.getConsumerIdAndDatesMap(CommonUtils
+					.getValueByKeyFromConfig("consumers.path"));
+
+	public static class SeperateMapper extends
+			Mapper<LongWritable, Text, Text, Text> {
 
 		public void map(LongWritable ikey, Text ivalue, Context context)
 				throws IOException, InterruptedException {
-			Text key = new Text(ivalue.toString().substring(0, ivalue.find("^")));
-			//System.out.println(key);
+			Text key = new Text(ivalue.toString()
+					.substring(0, ivalue.find("^")));
+			// System.out.println(key);
 			context.write(key, ivalue);
-			
+
 		}
 
 	}
-	
-	public static class SeperatePositiveReducer extends Reducer<Text, Text, NullWritable, Text> {
+
+	public static class SeperatePositiveReducer extends
+			Reducer<Text, Text, NullWritable, Text> {
 
 		public void reduce(Text _key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
-			System.out.println("idAndDates:"+idAndDates);
-			System.out.println("key out:"+_key);
+			/*System.out.println("idAndDates:" + idAndDates);
+			System.out.println("key out:" + _key);*/
 			// process values
-			if(idAndDates.containsKey(_key.toString())){
+			if (idAndDates.containsKey(_key.toString())) {
 				for (Text val : values) {
 					context.write(NullWritable.get(), val);
 				}
 			}
 		}
 	}
-	
-	public static class SeperateNegativeReducer extends Reducer<Text, Text, NullWritable, Text> {
+
+	public static class SeperateNegativeReducer extends
+			Reducer<Text, Text, NullWritable, Text> {
 
 		public void reduce(Text _key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
-			System.out.println("idAndDates:"+idAndDates);
-			System.out.println("key out:"+_key);
+			/*System.out.println("idAndDates:" + idAndDates);
+			System.out.println("key out:" + _key);*/
+			Configuration conf = context.getConfiguration();
+			conf.getResource("consumers");
 			// process values
-			if(!idAndDates.containsKey(_key.toString())){
+			if (!idAndDates.containsKey(_key.toString())) {
 				for (Text val : values) {
 					context.write(NullWritable.get(), val);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args)  throws Exception{
-		
-		idAndDates = ConsumerUtils.getConsumerIdAndDatesMap(
-				CommonUtils.getValueByKeyFromConfig("consumers.path"));
-	
+	public static void main(String[] args) throws Exception {
+
 		Configuration conf = new Configuration();
-		String otherArgs[] = (new GenericOptionsParser(conf, args)).getRemainingArgs();
-		if (otherArgs.length != 3){
+		String otherArgs[] = (new GenericOptionsParser(conf, args))
+				.getRemainingArgs();
+		if (otherArgs.length != 3) {
 			System.err.println("Usage: FindConsumers <in> <positive sample path> <negative sample path>");
 			System.exit(3);
 		}
-		//get positive samples
+
+		// get positive samples
 		Job getPositiveSampleJob = new Job(conf, "get positive samples");
 		getPositiveSampleJob.setJarByClass(SeperateSamples.class);
 		getPositiveSampleJob.setMapperClass(SeperateMapper.class);
@@ -106,15 +115,16 @@ public class SeperateSamples {
 		getPositiveSampleJob.setMapOutputValueClass(Text.class);
 		getPositiveSampleJob.setOutputKeyClass(NullWritable.class);
 		getPositiveSampleJob.setOutputValueClass(Text.class);
-		FileInputFormat.addInputPath(getPositiveSampleJob, new Path(otherArgs[0]));
-		FileOutputFormat.setOutputPath(getPositiveSampleJob, new Path(otherArgs[1]));
+		FileInputFormat.addInputPath(getPositiveSampleJob, new Path(
+				otherArgs[0]));
+		FileOutputFormat.setOutputPath(getPositiveSampleJob, new Path(
+				otherArgs[1]));
 		int posRes = getPositiveSampleJob.waitForCompletion(true) ? 0 : 1;
-		
-		if (posRes == 1 ) {
+		if (posRes == 1) {
 			System.exit(posRes);
 		}
-		
-		//get negative samples
+
+		// get negative samples
 		Job getNegativeSampleJob = new Job(conf, "get negative samples");
 		getNegativeSampleJob.setJarByClass(SeperateSamples.class);
 		getNegativeSampleJob.setMapperClass(SeperateMapper.class);
@@ -123,11 +133,12 @@ public class SeperateSamples {
 		getNegativeSampleJob.setMapOutputValueClass(Text.class);
 		getNegativeSampleJob.setOutputKeyClass(NullWritable.class);
 		getNegativeSampleJob.setOutputValueClass(Text.class);
-		FileInputFormat.addInputPath(getNegativeSampleJob, new Path(otherArgs[0]));
-		FileOutputFormat.setOutputPath(getNegativeSampleJob, new Path(otherArgs[2]));
+		FileInputFormat.addInputPath(getNegativeSampleJob, new Path(
+				otherArgs[0]));
+		FileOutputFormat.setOutputPath(getNegativeSampleJob, new Path(
+				otherArgs[2]));
 		System.exit(getNegativeSampleJob.waitForCompletion(true) ? 0 : 2);
 
 	}
 
 }
-

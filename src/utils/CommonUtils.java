@@ -26,14 +26,19 @@ import java.util.Properties;
  */
 public class CommonUtils {
 	
-	public static String getValueByKeyFromConfig(String key) throws IOException{
+	public static String getValueByKeyFromConfig(String key) {
 		Properties prop = new Properties();
 		String propFileName = "config.properties";
  
 		InputStream inputStream = CommonUtils.class.getClassLoader().getResourceAsStream(propFileName);
-		prop.load(inputStream);
+		try {
+			prop.load(inputStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (inputStream == null) {
-			throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+			System.err.println("property file '" + propFileName + "' not found in the classpath");
+			return null;
 		}
 		return prop.getProperty(key);
 	}
