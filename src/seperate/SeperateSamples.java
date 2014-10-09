@@ -44,7 +44,7 @@ public class SeperateSamples {
 		public void map(LongWritable ikey, Text ivalue, Context context)
 				throws IOException, InterruptedException {
 			Text key = new Text(ivalue.toString().substring(0, ivalue.find("^")));
-			System.out.println(key);
+			//System.out.println(key);
 			context.write(key, ivalue);
 			
 		}
