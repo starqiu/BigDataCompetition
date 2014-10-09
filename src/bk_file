@@ -1,0 +1,12 @@
+//get negative samples
+		Job getNegativeSampleJob = new Job(conf, "get negative samples");
+		getNegativeSampleJob.setJarByClass(SeperateSamples.class);
+		getNegativeSampleJob.setMapperClass(SeperateMapper.class);
+		getNegativeSampleJob.setReducerClass(SeperateNegativeReducer.class);
+		getNegativeSampleJob.setMapOutputKeyClass(Text.class);
+		getNegativeSampleJob.setMapOutputValueClass(Text.class);
+		getNegativeSampleJob.setOutputKeyClass(Text.class);
+		getNegativeSampleJob.setOutputValueClass(Text.class);
+		FileInputFormat.addInputPath(getNegativeSampleJob, new Path(otherArgs[0]));
+		FileOutputFormat.setOutputPath(getNegativeSampleJob, new Path(otherArgs[2]));
+		System.exit(getNegativeSampleJob.waitForCompletion(true) ? 2 : 3);
