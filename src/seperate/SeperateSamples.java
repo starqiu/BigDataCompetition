@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -14,6 +15,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
+import utils.CommonUtils;
 import utils.ConsumerUtils;
 /*
  * ============================================================
@@ -51,27 +53,31 @@ public class SeperateSamples {
 
 	}
 	
-	public static class SeperatePositiveReducer extends Reducer<Text, Text, Text, Text> {
+	public static class SeperatePositiveReducer extends Reducer<Text, Text, NullWritable, Text> {
 
 		public void reduce(Text _key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
+			System.out.println("idAndDates:"+idAndDates);
+			System.out.println("key out:"+_key);
 			// process values
 			if(idAndDates.containsKey(_key.toString())){
 				for (Text val : values) {
-					context.write(_key, val);
+					context.write(NullWritable.get(), val);
 				}
 			}
 		}
 	}
 	
-	public static class SeperateNegativeReducer extends Reducer<Text, Text, Text, Text> {
+	public static class SeperateNegativeReducer extends Reducer<Text, Text, NullWritable, Text> {
 
 		public void reduce(Text _key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
+			System.out.println("idAndDates:"+idAndDates);
+			System.out.println("key out:"+_key);
 			// process values
 			if(!idAndDates.containsKey(_key.toString())){
 				for (Text val : values) {
-					context.write(_key, val);
+					context.write(NullWritable.get(), val);
 				}
 			}
 		}
@@ -82,7 +88,8 @@ public class SeperateSamples {
 	 */
 	public static void main(String[] args)  throws Exception{
 		
-		idAndDates = ConsumerUtils.getConsumerIdAndDatesMap("/home/starqiu/data/consumers");
+		idAndDates = ConsumerUtils.getConsumerIdAndDatesMap(
+				CommonUtils.getValueByKeyFromConfig("consumers.path"));
 	
 		Configuration conf = new Configuration();
 		String otherArgs[] = (new GenericOptionsParser(conf, args)).getRemainingArgs();
@@ -97,7 +104,7 @@ public class SeperateSamples {
 		getPositiveSampleJob.setReducerClass(SeperatePositiveReducer.class);
 		getPositiveSampleJob.setMapOutputKeyClass(Text.class);
 		getPositiveSampleJob.setMapOutputValueClass(Text.class);
-		getPositiveSampleJob.setOutputKeyClass(Text.class);
+		getPositiveSampleJob.setOutputKeyClass(NullWritable.class);
 		getPositiveSampleJob.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(getPositiveSampleJob, new Path(otherArgs[0]));
 		FileOutputFormat.setOutputPath(getPositiveSampleJob, new Path(otherArgs[1]));
@@ -114,7 +121,7 @@ public class SeperateSamples {
 		getNegativeSampleJob.setReducerClass(SeperateNegativeReducer.class);
 		getNegativeSampleJob.setMapOutputKeyClass(Text.class);
 		getNegativeSampleJob.setMapOutputValueClass(Text.class);
-		getNegativeSampleJob.setOutputKeyClass(Text.class);
+		getNegativeSampleJob.setOutputKeyClass(NullWritable.class);
 		getNegativeSampleJob.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(getNegativeSampleJob, new Path(otherArgs[0]));
 		FileOutputFormat.setOutputPath(getNegativeSampleJob, new Path(otherArgs[2]));

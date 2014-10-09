@@ -61,7 +61,7 @@ public class ConsumerUtils {
 			line = negBr.readLine().split("\t");
 			if (consumers.containsKey(line[0])) {
 				System.err.println("negative sample is not pure!");
-				return 1;
+				return 2;
 			}
 		}
 		System.out.println("the samples seperate correctly!");
