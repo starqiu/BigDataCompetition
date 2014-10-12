@@ -12,7 +12,6 @@
 package stat;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import org.apache.hadoop.conf.Configuration;
@@ -27,7 +26,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 /**
- * 实现功能：统计列
+ * 实现功能：统计列,通用的MapReduce,只需改变colNames和输入,即可统计其他数据
+ * 输入:monitor data
+ * 输出:每一列的数据种类数
  * <p>
  * date author email notes<br />
  * ----------------------------------------------------------------<br />
