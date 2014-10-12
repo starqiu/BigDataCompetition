@@ -11,9 +11,9 @@
  */
 package utils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -47,7 +47,9 @@ public class CommonUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
-		System.out.println(getValueByKeyFromConfig("consumers.path"));
+		String str ="mzid2726522^1^caid1185^spid13023^CR29_^W7^en^ip5597173^20140601111042^IMP";
+		String[] arr = str.split("\\^");
+		System.out.println(Arrays.toString(arr));
 	}
 
 }

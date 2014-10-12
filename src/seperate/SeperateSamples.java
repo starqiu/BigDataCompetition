@@ -52,7 +52,7 @@ public class SeperateSamples {
 				throws IOException, InterruptedException {
 			Text key = new Text(ivalue.toString()
 					.substring(0, ivalue.find("^")));
-			// System.out.println(key);
+			System.out.print(ikey+",");
 			context.write(key, ivalue);
 
 		}
