@@ -1,11 +1,11 @@
 BASE.PATH <- "/host/kp/siat/KDD/data/"
 
 users.in.train <- read.table(paste(BASE.PATH,"usersInTrain/part-r-00000",sep=""),
-                           header=TRUE,sep="")
+                           header=FALSE,sep="")
 users.in.test <- read.table(paste(BASE.PATH,"usersInTest/part-r-00000",sep=""),
-                             header=TRUE,sep="")
+                             header=FALSE,sep="")
 users.in.validation <- read.table(paste(BASE.PATH,"usersInValidation/part-r-00000",sep=""),
-                             header=TRUE,sep="")
+                             header=FALSE,sep="")
 
 #users.in.train <- t(users.in.train)[1,]
 # users.in.test <- t(users.in.test)[1,]
