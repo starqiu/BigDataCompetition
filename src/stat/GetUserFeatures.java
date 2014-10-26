@@ -86,29 +86,67 @@ public class GetUserFeatures {
 				cols[1] = "0";
 			}
 
-			// modify the age field (\N:unknown=>MEAN_AGE(25) ) and regularize
-			// it
-			if ("\\N".equals(cols[2])) {
-				cols[2] = String.valueOf((MEAN_AGE - MIN_AGE) / AGE_RANGE);
-			} else {
-				cols[2] = String.valueOf((Integer.parseInt(cols[2]) - MIN_AGE)
-						/ AGE_RANGE);
+			// modify the age field (\N:unknown=>0 ) and decrete it
+			cols[2] = "\\N".equals(cols[2]) ? "0" : decreteAge(Integer
+					.parseInt(cols[2]));
+			/*
+			 * if ("\\N".equals(cols[2])) { cols[2] = "0"; } else { cols[2] =
+			 * decreteAge(Integer.parseInt(cols[2])); }
+			 */
+
+			// decrete Registration Age
+			cols[3] = "\\N".equals(cols[3]) ? "0" : decreteRegistAge(Integer
+					.parseInt(cols[3]));
+			/*
+			 * if ("\\N".equals(cols[3])) { cols[3] = "0"; }
+			 */
+
+			// modify the region field
+			if ("\\N".equals(cols[4])) {
+				cols[4] = "0";
 			}
 
-			// regularize Registration Age
-			cols[3] = String.valueOf((Integer.parseInt(cols[3]) - MIN_REG_AGE)
-					/ REG_AGE_RANGE);
-			
-			//modify the region field
-			if ("\\N".equals(cols[4])) {
-				cols[4] = "1";
-			} 
-			
 			// 25 features
 			featureStr = join(",", cols, 1);
 			userFeature.put(cols[0], featureStr);
 		}
 		return userFeature;
+	}
+
+	public static String decreteAge(int age) {
+		String result = "0";
+		if (age >= 0 && age < 10) {
+			result = "0";
+		} else if (age >= 10 && age < 20) {
+			result = "1";
+		} else if (age >= 20 && age < 30) {
+			result = "2";
+		} else if (age >= 30 && age < 40) {
+			result = "3";
+		} else if (age >= 40 && age < 50) {
+			result = "4";
+		} else {
+			result = "5";
+		}
+
+		return result;
+	}
+
+	public static String decreteRegistAge(int registAge) {
+		String result = "0";
+		if (registAge >= 0 && registAge < 1000) {
+			result = "0";
+		} else if (registAge >= 1000 && registAge < 2000) {
+			result = "1";
+		} else if (registAge >= 2000 && registAge < 3000) {
+			result = "2";
+		} else if (registAge >= 3000 && registAge < 4000) {
+			result = "3";
+		} else {
+			result = "4";
+		}
+
+		return result;
 	}
 
 	public static HashMap<String, String> readUserAdFeatureIntoMap(String path,
@@ -190,8 +228,9 @@ public class GetUserFeatures {
 			cols = line.split(",");
 			userId = cols[0];
 			adId = cols[1];
-			line = userFeature.get(userId) + "," + adFeature.get(adId)+","+cols[5];
-			//System.out.println(line);
+			line = userFeature.get(userId) + "," + adFeature.get(adId) + ","
+					+ cols[5];
+			// System.out.println(line);
 			bw.write(line);
 		}
 		br.close();
@@ -292,7 +331,7 @@ public class GetUserFeatures {
 		// HashMap<String, String> userAdFeature =
 		// readUserAdFeatureIntoMap(basePath+"userAdFeature","\t");
 		HashMap<String, String> userFeature = readUserFeatureIntoMap(basePath
-				+ "users.txt", ",");
+				+ "users", ",");
 		getAllFeatureWithClassIdIntoFile(basePath + "training.txt", basePath
 				+ "TrainingFeatures", userFeature, adFeature);
 		getAllFeatureWithClassIdIntoFile(basePath + "testing.txt", basePath
