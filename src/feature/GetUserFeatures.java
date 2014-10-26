@@ -9,7 +9,7 @@
  * All rights reserved.
  * ============================================================
  */
-package stat;
+package feature;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
