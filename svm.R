@@ -2,26 +2,27 @@ library(e1071)
 library(ROCR)
 
 BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
+CLASS.INDEX <- 30
 
 start.time <- Sys.time()
 train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")
 num <- nrow(train.feature)
-# set.seed(1)
-# samp <- sort(sample(num,10000))
+set.seed(2)
+samp <- sort(sample(num,10000))
 train.col <- colnames(train.feature,prefix="")
 #然后获得一般线性模型结果
-fmla <- as.formula(paste(train.col[30], "~",paste(train.col[-30], collapse= "+")))
+fmla <- as.formula(paste(train.col[CLASS.INDEX], "~",paste(train.col[-CLASS.INDEX], collapse= "+")))
 
 # a <- svm(fmla,train.feature[samp,])
 a <- svm(fmla,train.feature)
 
 test.feature <- read.table(paste(BASE.PATH,"tef",sep=""),sep=",")
-p=predict(a,test.feature[-30])
+p=predict(a,test.feature[-CLASS.INDEX])
 
 write.table(p,paste(BASE.PATH,"svmPredictTest",sep=""),sep="\t",
             quote = FALSE,row.names = FALSE,col.names=FALSE)
 
-m=prediction(p,test.feature[30])
+m=prediction(p,test.feature[CLASS.INDEX])
 png("svmROC.png")
 plot(performance(m,'tpr','fpr'))
 abline(0,1, lty = 8, col = "grey")

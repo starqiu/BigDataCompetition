@@ -37,21 +37,21 @@ public class AddClkRateToFeatures {
 			String trainingFeaturesPath, String testingFeaturesPath,
 			String newTrainingFeaturesPath, String newTestingFeaturesPath)
 			throws Exception {
-		//load rate to map
+		// load rate to map
 		HashMap<String, String> userRate = readUserOrAdRateIntoMap(
-				userRatePath, ",");
+				userRatePath, "\t");
 		HashMap<String, String> adRate = readUserOrAdRateIntoMap(adRatePath,
-				",");
-		HashMap<String, String> userAndAdRate = readUserOrAdRateIntoMap(
-				userAndAdRatePath, ",");
+				"\t");
+		HashMap<String, String> userAndAdRate = readUserAndAdRateIntoMap(
+				userAndAdRatePath, "\t");
 
-		//add rate for train set
+		// add rate for train set
 		addRateToFeatures(trainPath, trainingFeaturesPath,
 				newTrainingFeaturesPath, userRate, adRate, userAndAdRate);
-		//add rate for test  set
+		// add rate for test set
 		addRateToFeatures(testPath, testingFeaturesPath,
 				newTestingFeaturesPath, userRate, adRate, userAndAdRate);
-		
+
 	}
 
 	public static void addRateToFeatures(String originPath,
@@ -61,12 +61,17 @@ public class AddClkRateToFeatures {
 			throws FileNotFoundException, IOException, Exception {
 		BufferedReader originBR = new BufferedReader(new FileReader(new File(
 				originPath)));
-		BufferedReader featuresBR = new BufferedReader(new FileReader(
-				new File(featuresPath)));
-		BufferedWriter newFeaturesBW = new BufferedWriter(
-				new FileWriter(newFeaturesPath));
-		addNewFeatures(originBR, featuresBR, newFeaturesBW,
-				userRate, adRate, userAndAdRate);
+		BufferedReader featuresBR = new BufferedReader(new FileReader(new File(
+				featuresPath)));
+		BufferedWriter newFeaturesBW = new BufferedWriter(new FileWriter(
+				newFeaturesPath));
+
+		addNewFeatures(originBR, featuresBR, newFeaturesBW, userRate, adRate,
+				userAndAdRate);
+
+		originBR.close();
+		featuresBR.close();
+		newFeaturesBW.close();
 	}
 
 	public static void addNewFeatures(BufferedReader originBR,
@@ -75,6 +80,8 @@ public class AddClkRateToFeatures {
 			HashMap<String, String> userAndAdRate) throws Exception {
 		String featuresRecord = "";
 		String[] cols;
+		int lastSepIndex = 0;
+		String classIndex = "";
 		boolean notStartLineFlag = false;
 		while (originBR.ready() && featuresBR.ready()) {
 			if (notStartLineFlag) {
@@ -84,14 +91,14 @@ public class AddClkRateToFeatures {
 			}
 			cols = originBR.readLine().split(",");
 			featuresRecord = featuresBR.readLine();
-
-			newFeaturesBW.write(featuresRecord + "," + userRate.get(cols[0])
-					+ "," + adRate.get(cols[1])
-					+ userAndAdRate.get(cols[0] + "," + cols[1]));
+			lastSepIndex = featuresRecord.lastIndexOf(',');
+			classIndex = featuresRecord.substring(lastSepIndex + 1,
+					featuresRecord.length());
+			newFeaturesBW.write(featuresRecord.substring(0, lastSepIndex) + ","
+					+ userRate.get(cols[0]) + "," + adRate.get(cols[1]) + ","
+					+ userAndAdRate.get(cols[0] + "," + cols[1]) + ","
+					+ classIndex);
 		}
-		originBR.close();
-		featuresBR.close();
-		newFeaturesBW.close();
 	}
 
 	public static HashMap<String, String> readUserOrAdRateIntoMap(String path,
@@ -108,7 +115,7 @@ public class AddClkRateToFeatures {
 		return userOrAdRate;
 	}
 
-	public static HashMap<String, String> readUserAndAdIntoMap(String path,
+	public static HashMap<String, String> readUserAndAdRateIntoMap(String path,
 			String sep) throws Exception {
 		HashMap<String, String> userAndAdRate = new HashMap<>();
 		BufferedReader br = new BufferedReader(new FileReader(new File(path)));
@@ -122,11 +129,13 @@ public class AddClkRateToFeatures {
 		return userAndAdRate;
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
+	public static void main(String[] args) throws Exception {
+		addClkRateToFeatures(basePath + "training.txt", basePath
+				+ "testing.txt", basePath + "userRate1", basePath + "adRate",
+				basePath + "userAdRate1", basePath + "TrainingFeatures1",
+				basePath + "TestingFeatures1", basePath
+						+ "trainingFeaturesWithClkRate", basePath
+						+ "testingFeaturesWithClkRate");
 	}
 
 }
