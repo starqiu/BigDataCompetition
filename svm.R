@@ -7,7 +7,7 @@ CLASS.INDEX <- 30
 start.time <- Sys.time()
 train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")
 num <- nrow(train.feature)
-set.seed(2)
+
 samp <- sort(sample(num,10000))
 train.col <- colnames(train.feature,prefix="")
 #然后获得一般线性模型结果

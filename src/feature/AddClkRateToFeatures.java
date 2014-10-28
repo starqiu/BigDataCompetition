@@ -33,7 +33,7 @@ public class AddClkRateToFeatures {
 	public final static String basePath = "/host/kp/siat/KDD/ccf_contest/um/";
 
 	public static void addClkRateToFeatures(String trainPath, String testPath,
-			String userRatePath, String adRatePath, String userAndAdRatePath,
+			String userRatePath, String adRatePath,
 			String trainingFeaturesPath, String testingFeaturesPath,
 			String newTrainingFeaturesPath, String newTestingFeaturesPath)
 			throws Exception {
@@ -42,22 +42,19 @@ public class AddClkRateToFeatures {
 				userRatePath, "\t");
 		HashMap<String, String> adRate = readUserOrAdRateIntoMap(adRatePath,
 				"\t");
-		HashMap<String, String> userAndAdRate = readUserAndAdRateIntoMap(
-				userAndAdRatePath, "\t");
 
 		// add rate for train set
 		addRateToFeatures(trainPath, trainingFeaturesPath,
-				newTrainingFeaturesPath, userRate, adRate, userAndAdRate);
+				newTrainingFeaturesPath, userRate, adRate);
 		// add rate for test set
 		addRateToFeatures(testPath, testingFeaturesPath,
-				newTestingFeaturesPath, userRate, adRate, userAndAdRate);
+				newTestingFeaturesPath, userRate, adRate);
 
 	}
 
 	public static void addRateToFeatures(String originPath,
 			String featuresPath, String newFeaturesPath,
-			HashMap<String, String> userRate, HashMap<String, String> adRate,
-			HashMap<String, String> userAndAdRate)
+			HashMap<String, String> userRate, HashMap<String, String> adRate)
 			throws FileNotFoundException, IOException, Exception {
 		BufferedReader originBR = new BufferedReader(new FileReader(new File(
 				originPath)));
@@ -66,8 +63,7 @@ public class AddClkRateToFeatures {
 		BufferedWriter newFeaturesBW = new BufferedWriter(new FileWriter(
 				newFeaturesPath));
 
-		addNewFeatures(originBR, featuresBR, newFeaturesBW, userRate, adRate,
-				userAndAdRate);
+		addNewFeatures(originBR, featuresBR, newFeaturesBW, userRate, adRate);
 
 		originBR.close();
 		featuresBR.close();
@@ -76,13 +72,15 @@ public class AddClkRateToFeatures {
 
 	public static void addNewFeatures(BufferedReader originBR,
 			BufferedReader featuresBR, BufferedWriter newFeaturesBW,
-			HashMap<String, String> userRate, HashMap<String, String> adRate,
-			HashMap<String, String> userAndAdRate) throws Exception {
+			HashMap<String, String> userRate, HashMap<String, String> adRate)
+			throws Exception {
 		String featuresRecord = "";
 		String[] cols;
 		int lastSepIndex = 0;
 		String classIndex = "";
 		boolean notStartLineFlag = false;
+		String userRateVal;
+		String adRateVal;
 		while (originBR.ready() && featuresBR.ready()) {
 			if (notStartLineFlag) {
 				newFeaturesBW.newLine();
@@ -94,10 +92,16 @@ public class AddClkRateToFeatures {
 			lastSepIndex = featuresRecord.lastIndexOf(',');
 			classIndex = featuresRecord.substring(lastSepIndex + 1,
 					featuresRecord.length());
+			userRateVal = userRate.get(cols[0]);
+			if (userRateVal == null) {
+				userRateVal = "0";
+			}
+			adRateVal = adRate.get(cols[1]);
+			if (adRateVal == null) {
+				adRateVal = "0";
+			}
 			newFeaturesBW.write(featuresRecord.substring(0, lastSepIndex) + ","
-					+ userRate.get(cols[0]) + "," + adRate.get(cols[1]) + ","
-					+ userAndAdRate.get(cols[0] + "," + cols[1]) + ","
-					+ classIndex);
+					+ userRateVal + "," + adRateVal + "," + classIndex);
 		}
 	}
 
@@ -132,9 +136,8 @@ public class AddClkRateToFeatures {
 	public static void main(String[] args) throws Exception {
 		addClkRateToFeatures(basePath + "training.txt", basePath
 				+ "testing.txt", basePath + "userRate1", basePath + "adRate",
-				basePath + "userAdRate1", basePath + "TrainingFeatures1",
-				basePath + "TestingFeatures1", basePath
-						+ "trainingFeaturesWithClkRate", basePath
+				basePath + "TrainingFeatures1", basePath + "TestingFeatures1",
+				basePath + "trainingFeaturesWithClkRate", basePath
 						+ "testingFeaturesWithClkRate");
 	}
 

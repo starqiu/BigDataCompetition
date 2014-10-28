@@ -1,10 +1,11 @@
 library(ROCR)
 library(nnet)
 BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
-CLASS.INDEX <- 30
+CLASS.INDEX <- 27
+REMOVE.FEATRUE.INDEX <-c(5,18,28)
 
 start.time <- Sys.time()
-train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")
+train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")[,-REMOVE.FEATRUE.INDEX]
 num <- nrow(train.feature)
 set.seed(1)
 samp <- sort(sample(num,10000))
@@ -14,7 +15,7 @@ fmla <- as.formula(paste(train.col[CLASS.INDEX], "~",paste(train.col[-CLASS.INDE
 
 a <- nnet(fmla,train.feature[samp,],size=9,rang=0.03,decay=5e-4,maxit=1000)
 
-test.feature <- read.table(paste(BASE.PATH,"tef",sep=""),sep=",")
+test.feature <- read.table(paste(BASE.PATH,"tef",sep=""),sep=",")[,-REMOVE.FEATRUE.INDEX]
 p=predict(a,test.feature[-CLASS.INDEX])
 
 write.table(p,paste(BASE.PATH,"nnetPredictTest",sep=""),sep="\t",

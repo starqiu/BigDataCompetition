@@ -18,7 +18,7 @@ write.table(as.data.frame(new.ads.in.test),
             quote = FALSE,
             sep="\t")
 write.table(as.data.frame(old.ads.in.test),
-            paste(BASE.PATH,"old.ads.in.test",sep=""),
+            paste(BASE.PATH,"oldAdsInTest",sep=""),
             row.names=FALSE,
             col.names=FALSE,
             quote = FALSE,
