@@ -1,8 +1,8 @@
 library(ROCR)
 BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
-CLASS.INDEX <- 30
 
 train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")
+CLASS.INDEX <-  ncol(train.feature)
 train.col <- colnames(train.feature,prefix="")
 #然后获得一般线性模型结果
 fmla <- as.formula(paste(train.col[CLASS.INDEX], "~",paste(train.col[-CLASS.INDEX], collapse= "+")))

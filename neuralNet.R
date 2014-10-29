@@ -1,12 +1,12 @@
 library(ROCR)
 library(nnet)
 BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
-CLASS.INDEX <- 27
 REMOVE.FEATRUE.INDEX <-c(5,18,28)
 
 start.time <- Sys.time()
 train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")[,-REMOVE.FEATRUE.INDEX]
 num <- nrow(train.feature)
+CLASS.INDEX <-  ncol(train.feature)
 set.seed(1)
 samp <- sort(sample(num,10000))
 train.col <- colnames(train.feature,prefix="")
