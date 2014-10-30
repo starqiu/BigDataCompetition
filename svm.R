@@ -2,6 +2,7 @@ library(e1071)
 library(ROCR)
 
 BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
+# BASE.PATH <- "/home/xqiu/kdd/data/"
 
 start.time <- Sys.time()
 train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")
