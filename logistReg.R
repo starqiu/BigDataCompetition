@@ -1,20 +1,23 @@
 library(ROCR)
-BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
+BASE.PATH <- "/home/xqiu/kdd/data/"
+REMOVE.FEATRUE.INDEX <-c(5,28)
 
-train.feature <- read.table(paste(BASE.PATH,"trf",sep=""),sep=",")
+start.time <- Sys.time()
+train.feature <- read.table(paste(BASE.PATH,"TrainingFeatures",sep=""),sep=",")
 CLASS.INDEX <-  ncol(train.feature)
 train.col <- colnames(train.feature,prefix="")
 #然后获得一般线性模型结果
 fmla <- as.formula(paste(train.col[CLASS.INDEX], "~",paste(train.col[-CLASS.INDEX], collapse= "+")))
 glm.sol<-glm(fmla, family=binomial, data=train.feature)
 # summary(glm.sol)
-
+write.table(glm.sol$coefficients,paste(BASE.PATH,"coefficients",sep=""),sep="\t",
+            quote = FALSE,row.names = FALSE,col.names=FALSE)
 #根据模型对 测试集做预测，得到为正样本的概率
 
-test.feature <- read.table(paste(BASE.PATH,"tef",sep=""),sep=",")
+test.feature <- read.table(paste(BASE.PATH,"TestingFeatures",sep=""),sep=",")
 pre<-predict(glm.sol, test.feature[-CLASS.INDEX])
 p<-1/(1+exp(-pre))
-write.table(p,paste(BASE.PATH,"predictTest",sep=""),sep="\t",
+write.table(p,paste(BASE.PATH,"lrPredictTest",sep=""),sep="\t",
             quote = FALSE,row.names = FALSE,col.names=FALSE)
 
 
@@ -26,7 +29,7 @@ write.table(p,paste(BASE.PATH,"predictTest",sep=""),sep="\t",
 # 再利用ROCR包绘制ROC图以衡量模型的效果。
 
 m=prediction(p,test.feature[CLASS.INDEX])
-png("ROC.png")
+png("lrROC.png")
 plot(performance(m,'tpr','fpr'))
 abline(0,1, lty = 8, col = "grey")
 dev.off()
@@ -35,9 +38,13 @@ dev.off()
 # 许多的数据挖掘大赛会用它来作为最终的评价指标
 
 auc <- performance(m, "auc")
-write.table(data.frame(auc@y.values),paste(BASE.PATH,"auc",sep=""),sep="\t",
+write.table(data.frame(auc@y.values),paste(BASE.PATH,"lrAUC",sep=""),sep="\t",
             quote = FALSE,row.names = FALSE,col.names=FALSE)
 
+#calc time cost
+end.time <- Sys.time()
+write.table(data.frame(end.time-start.time),paste(BASE.PATH,"lrTime",sep=""),sep="\t",
+            quote = FALSE,row.names = FALSE,col.names=FALSE)
 
 #simple data test
 # life = data.frame(
