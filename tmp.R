@@ -1,31 +1,31 @@
-library(caret)
+# ex1 <- function(ep,d,N){
+#   ep^2*(1-(d+1)/N)
+# }
+# 
+# print(ex1(0.1,8,10))
+# print(ex1(0.1,8,100))
+# print(ex1(0.1,8,1000))
+# print(ex1(0.1,8,25))
+# print(ex1(0.1,8,500))
 
-BASE.PATH <- "/host/kp/siat/KDD/ccf_contest/um/"
+# E <- function(u,v){
+#   exp(u) + exp(2*v) + exp(u*v) + u^2 -2*u*v +2*(v^2) -3*u -2*v
+# }
+# E_fun <- expression(exp(u) + exp(2*v) + exp(u*v) + u^2 -2*u*v +2*(v^2) -3*u -2*v)
+# 
+# u <-0
+# v <-0
+# uv <- c(0,0)
+# for (i in 1:5){
+#   #D()函数可以用来对函数求导函数
+#   err = c(eval(D(E_fun,"u")),eval(D(E_fun,"v")))
+#   uv <- uv - 0.01 * err
+#   u <- uv[1]
+#   v <- uv[2]
+# }
+# 
+# res <- E(u,v)
 
-# train <- read.table(paste(BASE.PATH,"train",sep=""),sep=",")
-
-data(mdrr)
-# 先删去近似于常量的变量
-zerovar <- nearZeroVar(mdrrDescr)
-newdata1 <- mdrrDescr[,-zerovar]
-# 再删去相关度过高的自变量
-descrCorr <- cor(newdata1)
-highCorr <- findCorrelation(descrCorr, 0.90)
-newdata2 <- newdata1[, -highCorr]
-# 数据预处理步骤（标准化，缺失值处理）
-Process <- preProcess(newdata2)
-newdata3 <- predict(Process, newdata2)
-# 用sbf函数实施过滤方法，这里是用随机森林来评价变量的重要性
-data.filter <- sbf(newdata3,mdrrClass,
-                   sbfControl = sbfControl(functions=rfSBF,
-                                           verbose=F,
-                                           method='cv'))
-# 根据上面的过滤器筛选出67个变量
-x <- newdata3[data.filter$optVariables]
-# 再用rfe函数实施封装方法，建立的模型仍是随机森林
-profile <- rfe(x,mdrrClass,
-               sizes = c(10,20,30,50,60),
-               rfeControl = rfeControl(functions=rfFuncs
-                                       ,method='cv'))
-# 将结果绘图，发现20-30个变量的模型精度最高
-plot(profile,type=c('o','g'))
+X <- matrix(runif(1000*2,-1,1),1000,2)
+samp.num <-100
+X[1:samp.num,] <- -X[1:samp.num,]

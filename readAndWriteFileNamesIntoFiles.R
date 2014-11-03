@@ -1,4 +1,4 @@
-CLASSIFY.PATH <- "/host/kp/siat/KDD/ccf_contest/classify/"
+CLASSIFY.PATH <- "/host/kp/siat/KDD/ccf_contest/classify_new/"
 AD.PATH <- "/host/kp/siat/KDD/ccf_contest/data/ad.txt"
 OUTPUT.PATH <- "/host/kp/siat/KDD/ccf_contest/ads.txt"
 
