@@ -38,6 +38,7 @@ dev.off()
 # 许多的数据挖掘大赛会用它来作为最终的评价指标
 
 auc <- performance(m, "auc")
+auc@y.values
 write.table(data.frame(auc@y.values),paste(BASE.PATH,"lrAUC",sep=""),sep="\t",
             quote = FALSE,row.names = FALSE,col.names=FALSE)
 

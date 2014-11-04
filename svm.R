@@ -31,6 +31,7 @@ dev.off()
 # 另一个相关的衡量标准就是ROC图的曲线下面积，
 # 许多的数据挖掘大赛会用它来作为最终的评价指标
 auc <- performance(m, "auc")
+auc@y.values
 write.table(data.frame(auc@y.values),paste(BASE.PATH,"svmAUC",sep=""),sep="\t",
             quote = FALSE,row.names = FALSE,col.names=FALSE)
 #calc time cost
