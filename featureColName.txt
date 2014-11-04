@@ -88,7 +88,7 @@ c("V1","V2","V3","V4",
 11.3
 
 male:
-"V1"    =   "Sex",
+                                        "V1"    =   "Sex",
 "V2"    =   "Age",
 "V3"    =   "Regist Age",
 "V4"    =   "Region",
@@ -122,7 +122,7 @@ male:
 
 
 female:
-"V1"    =   "Sex", 
+                                        "V1"    =   "Sex", 
 "V2"    =   "Age",
 "V3"    =   "Regist Age",
 "V4"    =   "Region",

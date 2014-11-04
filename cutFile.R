@@ -3,7 +3,7 @@
 init.env <-function(){
   BASE.PATH <<- "/home/xqiu/kdd/data/"
   SAVE.BASE.PATH <<- "/home/xqiu/kdd/data/combineModel/"
-#   
+  
 #   BASE.PATH <<- "/host/kp/siat/KDD/ccf_contest/um/"
 #   SAVE.BASE.PATH <<- "/host/kp/siat/KDD/ccf_contest/um/combineModel/"
   
@@ -77,20 +77,22 @@ get.common.user.diff.by.sex <- function(){
   test.male <- read.table(paste(SAVE.BASE.PATH,"TestingFeatures_m",sep=""),sep=",")
   test.female <- read.table(paste(SAVE.BASE.PATH,"TestingFeatures_f",sep=""),sep=",")
   
-#   train.male.user <- read.table(paste(SAVE.BASE.PATH,"trainMaleUser",sep=""),sep=",")
-#   train.female.user <- read.table(paste(SAVE.BASE.PATH,"trainFeMaleUser",sep=""),sep=",")
-#   test.male.user <- read.table(paste(SAVE.BASE.PATH,"testMaleUser",sep=""),sep=",")
-#   test.female.user <- read.table(paste(SAVE.BASE.PATH,"testFeMaleUser",sep=""),sep=",")
+  #   train.male.user <- read.table(paste(SAVE.BASE.PATH,"trainMaleUser",sep=""),sep=",")
+  #   train.female.user <- read.table(paste(SAVE.BASE.PATH,"trainFeMaleUser",sep=""),sep=",")
+  #   test.male.user <- read.table(paste(SAVE.BASE.PATH,"testMaleUser",sep=""),sep=",")
+  #   test.female.user <- read.table(paste(SAVE.BASE.PATH,"testFeMaleUser",sep=""),sep=",")
   
   male.comm <- intersect(train.male[,USER.INDEX],test.male[,USER.INDEX])
   female.comm <- intersect(train.female[,USER.INDEX],test.female[,USER.INDEX])
+  # male.comm <- read.table(paste(SAVE.BASE.PATH,"maleComm",sep=""),sep=",")[,1]
+  # female.comm <- read.table(paste(SAVE.BASE.PATH,"femaleComm",sep=""),sep=",")[,1]
   
-  train.male.comm <- train.male[train.male[USER.INDEX] %in% male.comm]
-  train.female.comm <- train.female[train.female[USER.INDEX] %in% female.comm]
-  test.male.comm <- test.male[test.male[USER.INDEX] %in% male.comm]
-  test.female.comm <- test.female[test.female[USER.INDEX] %in% female.comm]
-  test.male.diff <- test.male[!test.male[USER.INDEX] %in% male.comm]
-  test.female.diff <- test.female[!test.female[USER.INDEX] %in% female.comm]
+  train.male.comm <- train.male[which(train.male[,USER.INDEX] %in% male.comm),]
+  train.female.comm <- train.female[which(train.female[,USER.INDEX] %in% female.comm),]
+  test.male.comm <- test.male[which(test.male[,USER.INDEX] %in% male.comm),]
+  test.female.comm <- test.female[which(test.female[,USER.INDEX] %in% female.comm),]
+  test.male.diff <- test.male[-which(test.male[,USER.INDEX] %in% male.comm),]
+  test.female.diff <- test.female[-which(test.female[,USER.INDEX] %in% female.comm),]
   
   write.table(male.comm,paste(SAVE.BASE.PATH,"maleComm",sep=""),sep=",",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
@@ -111,15 +113,26 @@ get.common.user.diff.by.sex <- function(){
               quote = FALSE,row.names = FALSE,col.names=FALSE)
 }
 
+stat.comm.record <-function(){
+  
+  
+}
+
 init.env() 
 # cut.file.via.sex()
-get.common.user.diff.by.sex() 
+# get.common.user.diff.by.sex() 
 
-# main <- function(){
-#   init.env() 
-#   cut.file.via.sex()
-#   get.common.user.diff.by.sex() 
-# 
-# }
-# 
+
+
+
+print("succ")
+
+
+main <- function(){
+  init.env() 
+  cut.file.via.sex()
+  get.common.user.diff.by.sex() 
+
+}
+
 
