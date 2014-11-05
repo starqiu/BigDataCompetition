@@ -9,6 +9,7 @@ init.env <-function(){
   
   MALE.REMOVE.INDEX <<-c(1,9,17,18,22,23,24,25,30)
   FEMALE.REMOVE.INDEX <<-c(1,9,10,19,20,21,29,31)
+  UNKNOWN.SEX.REMOVE.INDEX <<- c(1)
 
 }
   
@@ -41,12 +42,15 @@ cut.file.via.sex <-function(){
   train.row.no <- c(1:train.length)
   train.row.no.and.user <- cbind(train.row.no,train[,USER.INDEX.IN.SAMPLE])
   train.feature <- cbind(train.row.no.and.user,train.feature)
-  write.table(train.feature[which(train.feature[SEX.INDEX]==1),-(MALE.REMOVE.INDEX+OFFSET)],
-              paste(SAVE.BASE.PATH,"TrainingFeatures_m",sep=""),sep=",",
-              quote = FALSE,row.names = FALSE,col.names=FALSE)
-  write.table(train.feature[which(train.feature[SEX.INDEX]==-1),-(FEMALE.REMOVE.INDEX+OFFSET)],
-              paste(SAVE.BASE.PATH,"TrainingFeatures_f",sep=""),sep=",",
-              quote = FALSE,row.names = FALSE,col.names=FALSE)
+#   write.table(train.feature[which(train.feature[SEX.INDEX]==1),-(MALE.REMOVE.INDEX+OFFSET)],
+#               paste(SAVE.BASE.PATH,"TrainingFeatures_m",sep=""),sep=",",
+#               quote = FALSE,row.names = FALSE,col.names=FALSE)
+#   write.table(train.feature[which(train.feature[SEX.INDEX]==-1),-(FEMALE.REMOVE.INDEX+OFFSET)],
+#               paste(SAVE.BASE.PATH,"TrainingFeatures_f",sep=""),sep=",",
+#               quote = FALSE,row.names = FALSE,col.names=FALSE)
+  write.table(train.feature[which(train.feature[SEX.INDEX]==0),-(UNKNOWN.SEX.REMOVE.INDEX+OFFSET)],
+            paste(SAVE.BASE.PATH,"TrainingFeatures_u",sep=""),sep=",",
+            quote = FALSE,row.names = FALSE,col.names=FALSE)
   
   
   #add row NO.and user id  for test features
@@ -55,12 +59,14 @@ cut.file.via.sex <-function(){
   test.row.no <- c(1:test.length)
   test.row.no.and.user <- cbind(test.row.no,test[,USER.INDEX.IN.SAMPLE])
   test.feature <- cbind(test.row.no.and.user,test.feature)
-  t.m <-test.feature[which(test.feature[SEX.INDEX]==1),-(MALE.REMOVE.INDEX+OFFSET)]
-  write.table(t.m,
-              paste(SAVE.BASE.PATH,"TestingFeatures_m",sep=""),sep=",",
-              quote = FALSE,row.names = FALSE,col.names=FALSE)
-  write.table(test.feature[which(test.feature[SEX.INDEX]==-1),-(FEMALE.REMOVE.INDEX+OFFSET)],
-              paste(SAVE.BASE.PATH,"TestingFeatures_f",sep=""),sep=",",
+#   write.table(test.feature[which(test.feature[SEX.INDEX]==1),-(MALE.REMOVE.INDEX+OFFSET)],
+#               paste(SAVE.BASE.PATH,"TestingFeatures_m",sep=""),sep=",",
+#               quote = FALSE,row.names = FALSE,col.names=FALSE)
+#   write.table(test.feature[which(test.feature[SEX.INDEX]==-1),-(FEMALE.REMOVE.INDEX+OFFSET)],
+#               paste(SAVE.BASE.PATH,"TestingFeatures_f",sep=""),sep=",",
+#               quote = FALSE,row.names = FALSE,col.names=FALSE)
+  write.table(test.feature[which(test.feature[SEX.INDEX]==0),-(UNKNOWN.SEX.REMOVE.INDEX+OFFSET)],
+              paste(SAVE.BASE.PATH,"TestingFeatures_u",sep=""),sep=",",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
 #   
   rm(train.feature)
@@ -119,7 +125,7 @@ stat.comm.record <-function(){
 }
 
 init.env() 
-# cut.file.via.sex()
+cut.file.via.sex()
 # get.common.user.diff.by.sex() 
 
 

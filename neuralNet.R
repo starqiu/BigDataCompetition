@@ -2,10 +2,10 @@ library(ROCR)
 library(nnet)
 
 init.simple.env <- function(){
-  BASE.PATH <<- "/home/xqiu/kdd/data/"
-  SAVE.BASE.PATH <<- "/home/xqiu/kdd/data/combineModel/"
-#   BASE.PATH <<- "/host/kp/siat/KDD/ccf_contest/um/"
-#   SAVE.BASE.PATH <<- "/host/kp/siat/KDD/ccf_contest/um/combineModel/"
+#   BASE.PATH <<- "/home/xqiu/kdd/data/"
+#   SAVE.BASE.PATH <<- "/home/xqiu/kdd/data/combineModel/"
+  BASE.PATH <<- "/host/kp/siat/KDD/ccf_contest/um/"
+  SAVE.BASE.PATH <<- "/host/kp/siat/KDD/ccf_contest/um/combineModel/"
 }
 
 init.env <-function(){
@@ -267,21 +267,22 @@ train.female.diff<-function(){
 }
 
 merge.multi.models <- function(){
-  train.male.comm <- read.table(paste(BASE.PATH,"testMaleCommPredictTest",sep=""),sep=",")
-  train.female.comm <- read.table(paste(BASE.PATH,"testFemaleCommPredictTest",sep=""),sep=",")
-  train.male.diff <- read.table(paste(BASE.PATH,"testMaleDiffPredictTest",sep=""),sep=",")
-  train.female.diff <- read.table(paste(BASE.PATH,"testFemaleDiffPredictTest",sep=""),sep=",")
+  train.male.comm <- read.table(paste(BASE.PATH,"testMaleCommPredictTest",sep=""),sep="\t")
+  train.female.comm <- read.table(paste(BASE.PATH,"testFemaleCommPredictTest",sep=""),sep="\t")
+  train.male.diff <- read.table(paste(BASE.PATH,"testMaleDiffPredictTest",sep=""),sep="\t")
+  train.female.diff <- read.table(paste(BASE.PATH,"testFemaleDiffPredictTest",sep=""),sep="\t")
   merge.result <- rbind(train.male.comm,train.female.comm)
   merge.result <- rbind(merge.result,train.male.diff)
   merge.result <- rbind(merge.result,train.female.diff)
-  colnames(merge.result) <-c("row.no","p")
-  merge.result <- merge.result[order(row.no),]
+#   colnames(merge.result) <-c("x","p")
+  merge.result <- merge.result[order(merge.result[,1]),]
   write.table(merge.result[,2],paste(BASE.PATH,"mergePredictTest",sep=""),sep="\t",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
   write.table(merge.result,paste(BASE.PATH,"mergePredictTestWithNo",sep=""),sep="\t",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
-  
-  test.class.index <- read.table(paste(BASE.PATH,"TestingClassIndex",sep=""))
+  test.feature <<- read.table(paste(BASE.PATH,"TestingFeatures",sep=""),sep=",") 
+  CLASS.INDEX <<-  ncol(test.feature)
+  test.class.index <- test.feature[merge.result[,1],CLASS.INDEX]
   m=prediction(p,test.class.index)
   auc <- performance(m, "auc")
   write.table(data.frame(auc@y.values),paste(BASE.PATH,"mergeAUC",sep=""),sep="\t",
@@ -292,9 +293,9 @@ merge.multi.models <- function(){
 
 init.simple.env()
 # train.male.comm()
-train.female.comm()
-train.male.diff()
-train.female.diff()
+# train.female.comm()
+# train.male.diff()
+# train.female.diff()
 merge.multi.models()
 
 
