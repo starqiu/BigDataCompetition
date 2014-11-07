@@ -274,16 +274,15 @@ merge.multi.models <- function(){
   merge.result <- rbind(train.male.comm,train.female.comm)
   merge.result <- rbind(merge.result,train.male.diff)
   merge.result <- rbind(merge.result,train.female.diff)
-#   colnames(merge.result) <-c("x","p")
+  #   colnames(merge.result) <-c("x","p")
   merge.result <- merge.result[order(merge.result[,1]),]
   write.table(merge.result[,2],paste(BASE.PATH,"mergePredictTest",sep=""),sep="\t",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
   write.table(merge.result,paste(BASE.PATH,"mergePredictTestWithNo",sep=""),sep="\t",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
-  test.feature <<- read.table(paste(BASE.PATH,"TestingFeatures",sep=""),sep=",") 
-  CLASS.INDEX <<-  ncol(test.feature)
-  test.class.index <- test.feature[merge.result[,1],CLASS.INDEX]
-  m=prediction(p,test.class.index)
+  
+  test.class.index <- read.table(paste(BASE.PATH,"TestingClassIndex",sep=""))
+  m=prediction(merge.result[,2],test.class.index[merge.result[,1],])
   auc <- performance(m, "auc")
   write.table(data.frame(auc@y.values),paste(BASE.PATH,"mergeAUC",sep=""),sep="\t",
               quote = FALSE,row.names = FALSE,col.names=FALSE)
@@ -291,13 +290,13 @@ merge.multi.models <- function(){
   
 }
 
+
 init.simple.env()
 # train.male.comm()
 # train.female.comm()
 # train.male.diff()
 # train.female.diff()
 merge.multi.models()
-
 
 main <- function(){
   init.env()

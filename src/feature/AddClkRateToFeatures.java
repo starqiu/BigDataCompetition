@@ -30,32 +30,34 @@ import java.util.HashMap;
  *
  */
 public class AddClkRateToFeatures {
-	public final static String basePath = "/host/kp/siat/KDD/ccf_contest/um/";
+	// public final static String basePath =
+	// "/host/kp/siat/KDD/ccf_contest/um/";
+	public final static String basePath = "/home/xqiu/kdd/data/";
+	public final static String DEFAULT_USER_CLK_RATE = "0.05";
+	public final static String DEFAULT_AD_CLK_RATE = "0.05";
 
-	public static void addClkRateToFeatures(String trainPath, String testPath,
-			String userRatePath, String adRatePath,
-			String trainingFeaturesPath, String testingFeaturesPath,
-			String newTrainingFeaturesPath, String newTestingFeaturesPath)
-			throws Exception {
-		// load rate to map
-		HashMap<String, String> userRate = readUserOrAdRateIntoMap(
-				userRatePath, "\t");
-		HashMap<String, String> adRate = readUserOrAdRateIntoMap(adRatePath,
-				"\t");
-
-		// add rate for train set
-		addRateToFeatures(trainPath, trainingFeaturesPath,
-				newTrainingFeaturesPath, userRate, adRate);
-		// add rate for test set
-		addRateToFeatures(testPath, testingFeaturesPath,
-				newTestingFeaturesPath, userRate, adRate);
-
-	}
+	/*
+	 * public static void addClkRateToFeatures(String trainPath, String
+	 * testPath, String userRatePath, String adRatePath, String
+	 * trainingFeaturesPath, String testingFeaturesPath, String
+	 * newTrainingFeaturesPath, String newTestingFeaturesPath) throws Exception
+	 * { // load rate to map HashMap<String, String> userRate =
+	 * readUserOrAdRateIntoMap( userRatePath, "\t"); HashMap<String, String>
+	 * adRate = readUserOrAdRateIntoMap(adRatePath, "\t");
+	 * 
+	 * // add rate for train set addRateToFeatures(trainPath,
+	 * trainingFeaturesPath, newTrainingFeaturesPath, userRate, adRate); // add
+	 * rate for test set addRateToFeatures(testPath, testingFeaturesPath,
+	 * newTestingFeaturesPath, userRate, adRate);
+	 * 
+	 * }
+	 */
 
 	public static void addRateToFeatures(String originPath,
 			String featuresPath, String newFeaturesPath,
-			HashMap<String, String> userRate, HashMap<String, String> adRate)
-			throws FileNotFoundException, IOException, Exception {
+			HashMap<String, String> userRate, HashMap<String, String> adRate,
+			boolean haveClassIndex) throws FileNotFoundException, IOException,
+			Exception {
 		BufferedReader originBR = new BufferedReader(new FileReader(new File(
 				originPath)));
 		BufferedReader featuresBR = new BufferedReader(new FileReader(new File(
@@ -63,7 +65,14 @@ public class AddClkRateToFeatures {
 		BufferedWriter newFeaturesBW = new BufferedWriter(new FileWriter(
 				newFeaturesPath));
 
-		addNewFeatures(originBR, featuresBR, newFeaturesBW, userRate, adRate);
+		if (haveClassIndex) {
+			addNewFeatures(originBR, featuresBR, newFeaturesBW, userRate,
+					adRate);
+		} else {
+			addNewFeaturesWithoutClassIndex(originBR, featuresBR,
+					newFeaturesBW, userRate, adRate);
+
+		}
 
 		originBR.close();
 		featuresBR.close();
@@ -94,14 +103,47 @@ public class AddClkRateToFeatures {
 					featuresRecord.length());
 			userRateVal = userRate.get(cols[0]);
 			if (userRateVal == null) {
-				userRateVal = "0";
+				userRateVal = DEFAULT_USER_CLK_RATE;
 			}
 			adRateVal = adRate.get(cols[1]);
 			if (adRateVal == null) {
-				adRateVal = "0";
+				adRateVal = DEFAULT_AD_CLK_RATE;
 			}
 			newFeaturesBW.write(featuresRecord.substring(0, lastSepIndex) + ","
 					+ userRateVal + "," + adRateVal + "," + classIndex);
+		}
+	}
+
+	public static void addNewFeaturesWithoutClassIndex(BufferedReader originBR,
+			BufferedReader featuresBR, BufferedWriter newFeaturesBW,
+			HashMap<String, String> userRate, HashMap<String, String> adRate)
+			throws Exception {
+		String featuresRecord = "";
+		String[] cols;
+		int lastSepIndex = 0;
+		String classIndex = "";
+		boolean notStartLineFlag = false;
+		String userRateVal;
+		String adRateVal;
+		while (originBR.ready() && featuresBR.ready()) {
+			if (notStartLineFlag) {
+				newFeaturesBW.newLine();
+			} else {
+				notStartLineFlag = true;
+			}
+			cols = originBR.readLine().split(",");
+			featuresRecord = featuresBR.readLine();
+
+			userRateVal = userRate.get(cols[0]);
+			if (userRateVal == null) {
+				userRateVal = DEFAULT_USER_CLK_RATE;
+			}
+			adRateVal = adRate.get(cols[1]);
+			if (adRateVal == null) {
+				adRateVal = DEFAULT_AD_CLK_RATE;
+			}
+			newFeaturesBW.write(featuresRecord + "," + userRateVal + ","
+					+ adRateVal);
 		}
 	}
 
@@ -134,11 +176,33 @@ public class AddClkRateToFeatures {
 	}
 
 	public static void main(String[] args) throws Exception {
-		addClkRateToFeatures(basePath + "training.txt", basePath
-				+ "testing.txt", basePath + "userRate1", basePath + "adRate",
-				basePath + "TrainingFeatures1", basePath + "TestingFeatures1",
-				basePath + "trainingFeaturesWithClkRate", basePath
-						+ "testingFeaturesWithClkRate");
+		/*
+		 * addClkRateToFeatures(basePath + "training.txt", basePath +
+		 * "testing.txt", basePath + "smoothedUserRate", basePath +
+		 * "smoothedAdRate", basePath + "TrainingFeatures", basePath +
+		 * "TestingFeatures", basePath + "trainingFeaturesWithClkRate", basePath
+		 * + "testingFeaturesWithClkRate");
+		 */
+
+		// load rate to map
+		HashMap<String, String> userRate = readUserOrAdRateIntoMap(basePath
+				+ "smoothedUserRate", "\t");
+		HashMap<String, String> adRate = readUserOrAdRateIntoMap(basePath
+				+ "smoothedAdRate", "\t");
+
+		// add rate for train set
+		addRateToFeatures(basePath + "training.txt", basePath
+				+ "TrainingFeatures", basePath + "TrainingFeaturesWithClkRate",
+				userRate, adRate, true);
+		// add rate for test set
+		addRateToFeatures(basePath + "testing.txt", basePath
+				+ "TestingFeatures", basePath + "TestingFeaturesWithClkRate",
+				userRate, adRate, true);
+
+		// add rate for final contest set
+		addRateToFeatures(basePath + "evaluation_for_contest.txt", basePath
+				+ "FinalContestFeatures", basePath
+				+ "FinalContestFeaturesWithClkRate", userRate, adRate, false);
 	}
 
 }

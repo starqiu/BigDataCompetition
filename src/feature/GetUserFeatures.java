@@ -29,7 +29,8 @@ import java.util.HashMap;
  */
 public class GetUserFeatures {
 
-	public final static String basePath = "/host/kp/siat/KDD/ccf_contest/um/";
+//	public final static String basePath = "/host/kp/siat/KDD/ccf_contest/um/";
+	public final static String basePath = "/home/xqiu/kdd/data/";
 	public final static int FEATURE_LENGTH = 25;
 	public final static int IMP_WEIGHT = 1;
 	public final static int CLK_WEIGHT = 1;
@@ -203,7 +204,7 @@ public class GetUserFeatures {
 
 	public static void getAllFeatureWithClassIdIntoFile(String path,
 			String outPutPath, HashMap<String, String> userFeature,
-			HashMap<String, String> adFeature) throws Exception {
+			HashMap<String, String> adFeature,int classIndex) throws Exception {
 		File inFile = new File(path);
 		BufferedReader br = new BufferedReader(new FileReader(inFile));
 		File outputFile = new File(outPutPath);
@@ -229,7 +230,42 @@ public class GetUserFeatures {
 			userId = cols[0];
 			adId = cols[1];
 			line = userFeature.get(userId) + "," + adFeature.get(adId) + ","
-					+ cols[5];
+					+ cols[classIndex];
+			// System.out.println(line);
+			bw.write(line);
+		}
+		br.close();
+		bw.close();
+	}
+	
+	public static void getAllFeatureWithClassIdIntoFile4FinalContest(String path,
+			String outPutPath, HashMap<String, String> userFeature,
+			HashMap<String, String> adFeature) throws Exception {
+		File inFile = new File(path);
+		BufferedReader br = new BufferedReader(new FileReader(inFile));
+		File outputFile = new File(outPutPath);
+		if (!outputFile.exists()) {
+			outputFile.createNewFile();
+		}
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+		
+		String line = "";
+		String[] cols;
+		String userId = "";
+		String adId = "";
+		String features = "";
+		boolean notStartLineFlag = false;
+		while (br.ready()) {
+			if (notStartLineFlag) {
+				bw.newLine();
+			} else {
+				notStartLineFlag = true;
+			}
+			line = br.readLine();
+			cols = line.split(",");
+			userId = cols[0];
+			adId = cols[1];
+			line = userFeature.get(userId) + "," + adFeature.get(adId) ;
 			// System.out.println(line);
 			bw.write(line);
 		}
@@ -237,6 +273,7 @@ public class GetUserFeatures {
 		bw.close();
 	}
 
+	
 	public static String transformRecordToFeature(String record,
 			HashMap<String, String> adFeature) {
 
@@ -323,19 +360,23 @@ public class GetUserFeatures {
 	public static void main(String[] args) throws Exception {
 
 		HashMap<String, String> adFeature = readAdFeatureIntoMap(basePath
-				+ "ad_feature.txt", "\t");
+				+ "ads.txt", "\t");
 		/*
 		 * getUserAdFeatureIntoFile(basePath + "usr_ads_new", basePath +
 		 * "userAdFeature", adFeature);
 		 */
 		// HashMap<String, String> userAdFeature =
 		// readUserAdFeatureIntoMap(basePath+"userAdFeature","\t");
+		/*HashMap<String, String> userFeature = readUserFeatureIntoMap(basePath
+				+ "users", ",");*/
 		HashMap<String, String> userFeature = readUserFeatureIntoMap(basePath
-				+ "users", ",");
+				+ "users.txt", ",");
 		getAllFeatureWithClassIdIntoFile(basePath + "training.txt", basePath
-				+ "TrainingFeatures", userFeature, adFeature);
+				+ "TrainingFeatures", userFeature, adFeature,2);
 		getAllFeatureWithClassIdIntoFile(basePath + "testing.txt", basePath
-				+ "Testingeatures", userFeature, adFeature);
+				+ "TestingFeatures", userFeature, adFeature,5);
+		getAllFeatureWithClassIdIntoFile4FinalContest(basePath + "evaluation_for_contest.txt", basePath
+				+ "FinalContestFeatures", userFeature, adFeature);
 
 	}
 }
