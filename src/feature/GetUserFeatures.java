@@ -372,11 +372,11 @@ public class GetUserFeatures {
 		HashMap<String, String> userFeature = readUserFeatureIntoMap(basePath
 				+ "users.txt", ",");
 		getAllFeatureWithClassIdIntoFile(basePath + "training.txt", basePath
-				+ "TrainingFeatures", userFeature, adFeature,2);
-		getAllFeatureWithClassIdIntoFile(basePath + "testing.txt", basePath
-				+ "TestingFeatures", userFeature, adFeature,5);
-		getAllFeatureWithClassIdIntoFile4FinalContest(basePath + "evaluation_for_contest.txt", basePath
-				+ "FinalContestFeatures", userFeature, adFeature);
+				+ "TrainingFeatures", userFeature, adFeature,5);
+//		getAllFeatureWithClassIdIntoFile(basePath + "testing.txt", basePath
+//				+ "TestingFeatures", userFeature, adFeature,5);
+//		getAllFeatureWithClassIdIntoFile4FinalContest(basePath + "evaluation_for_contest.txt", basePath
+//				+ "FinalContestFeatures", userFeature, adFeature);
 
 	}
 }
