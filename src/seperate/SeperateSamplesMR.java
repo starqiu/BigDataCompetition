@@ -39,7 +39,7 @@ import utils.ConsumerUtils;
  * </p>
  *
  */
-public class SeperateSamples {
+public class SeperateSamplesMR {
 
 	public final static ConcurrentHashMap<String, String> idAndDates = ConsumerUtils
 			.getConsumerIdAndDatesMap(CommonUtils
@@ -108,7 +108,7 @@ public class SeperateSamples {
 
 		// get positive samples
 		Job getPositiveSampleJob = new Job(conf, "get positive samples");
-		getPositiveSampleJob.setJarByClass(SeperateSamples.class);
+		getPositiveSampleJob.setJarByClass(SeperateSamplesMR.class);
 		getPositiveSampleJob.setMapperClass(SeperateMapper.class);
 		getPositiveSampleJob.setReducerClass(SeperatePositiveReducer.class);
 		getPositiveSampleJob.setMapOutputKeyClass(Text.class);
@@ -126,7 +126,7 @@ public class SeperateSamples {
 
 		// get negative samples
 		Job getNegativeSampleJob = new Job(conf, "get negative samples");
-		getNegativeSampleJob.setJarByClass(SeperateSamples.class);
+		getNegativeSampleJob.setJarByClass(SeperateSamplesMR.class);
 		getNegativeSampleJob.setMapperClass(SeperateMapper.class);
 		getNegativeSampleJob.setReducerClass(SeperateNegativeReducer.class);
 		getNegativeSampleJob.setMapOutputKeyClass(Text.class);

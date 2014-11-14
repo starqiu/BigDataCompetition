@@ -27,7 +27,7 @@ import java.util.HashMap;
  * </p>
  *
  */
-public class GetUserFeatures {
+public class GetUserPictureFeatures {
 
 //	public final static String basePath = "/host/kp/siat/KDD/ccf_contest/um/";
 	public final static String basePath = "/home/xqiu/kdd/data/";
@@ -373,10 +373,10 @@ public class GetUserFeatures {
 				+ "users.txt", ",");
 		getAllFeatureWithClassIdIntoFile(basePath + "training.txt", basePath
 				+ "TrainingFeatures", userFeature, adFeature,5);
-//		getAllFeatureWithClassIdIntoFile(basePath + "testing.txt", basePath
-//				+ "TestingFeatures", userFeature, adFeature,5);
-//		getAllFeatureWithClassIdIntoFile4FinalContest(basePath + "evaluation_for_contest.txt", basePath
-//				+ "FinalContestFeatures", userFeature, adFeature);
+		getAllFeatureWithClassIdIntoFile(basePath + "testing.txt", basePath
+				+ "TestingFeatures", userFeature, adFeature,5);
+		getAllFeatureWithClassIdIntoFile4FinalContest(basePath + "evaluation_for_contest.txt", basePath
+				+ "FinalContestFeatures", userFeature, adFeature);
 
 	}
 }
